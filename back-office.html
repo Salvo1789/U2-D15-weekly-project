@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CRUDAZON - BACKOFFICE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <style>
+        .form-text {
+            display: none;
+        }
+
+        form.validated input:valid,
+        form.validated textarea:valid {
+            border-color: green;
+        }
+
+        form.validated input:invalid,
+        form.validated textarea:invalid {
+            border-color: red;
+        }
+
+        form.validated input:invalid+div,
+        form.validated textarea:invalid+div {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand d-flex" href="#">
+            <img src="https://s.w.org/images/core/emoji/14.0.0/svg/1f6cd.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+            <h3>CRUDAZON</h3>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="./index.html">Home </a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="./back-office.html">Back-office <span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <h2 class="d-inline-block">CRUDAZON > Backoffice</h2>
+                <h5 id="subtitle" class="d-inline-block"> — Aggiungi prodotto </h5>
+                <div class="spinner-border text-info float-end d-none" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <hr class="border-secondary">
+                <form class="mt-4" onsubmit="handleSubmit(event)">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nome Prodotto</label>
+                        <input type="text" class="form-control" id="name" placeholder="Inserisci un nome"
+                            aria-describedby="name" required>
+                        <div class="form-text text-danger">Ti manca di inserire un nome per l'evento</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descrizione</label>
+                        <textarea class="form-control" id="description" aria-describedby="description"
+                            placeholder="Inserisci una descrizione" row="4" required></textarea>
+                        <div class="form-text text-danger">Ti manca la descrizione</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Brand</label>
+                        <textarea class="form-control" id="brand" aria-describedby="brand"
+                            placeholder="Inserisci il brand" row="4" required></textarea>
+                        <div class="form-text text-danger">Ti manca il brand</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Prezzo</label>
+                        <input type="number" class="form-control" id="price" aria-describedby="price" placeholder="1€"
+                            required>
+                        <div class="form-text text-danger">Ti manca il prezzo</div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary me-auto" onclick="handleValidate()">Submit</button>
+                        <button id="delete-btn" type="button" class="btn btn-danger d-none"
+                            onclick="handleDelete()">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+
+    <script>
+
+        // vedi pagina details.html per spiegazione delle prossime due righe
+        const URLParams = new URLSearchParams(window.location.search)
+        const selectedId = URLParams.get("_id")
+
+        const endpoint = selectedId ? "https://striveschool-api.herokuapp.com/api/product/" + selectedId : "https://striveschool-api.herokuapp.com/api/product/"
+        const method = selectedId ? "PUT" : "POST"
+
+
+        // funzione lanciata dall'onclick del bottone, che bypassa il meccanismo che impedisce al onsubmit di azionarsi se i campi non sono validi
+        // così riusciamo a stabilire il momento giusto per mostrare la colorazione dei campi all'utente
+        // quantomeno dopo che prova ad inviare un form incompleto e non al caricamento della pagina (per non trovare un form rosso senza avere ancora fatto niente)
+        const handleValidate = () => {
+            const form = document.querySelector("form")
+            form.classList.add("validated")
+            // quando il form riceverà la calsse validated il css troverà corrispondenza e colorerà in verde i campi validi e in rosso quelli incompleti/non validi
+        }
+
+        window.onload = async () => {
+
+            if (selectedId) {
+
+                document.getElementById("subtitle").innerText = " — Modifica appuntamento" // cambia testo sottotitolo se siamo arrivati sulla pagina per modificare una risorsa esistente
+                document.getElementById("delete-btn").classList.remove("d-none") // abilita il bottone delete solo sulla pagina di modifica
+
+                try {
+                    const resp = await fetch(endpoint) // fetch di tipo GET su endpoint con id incorporato
+                    const productData = await resp.json()
+                    const { name, description, brand, price } = producttData
+
+
+                    // pre popolazione dei campi del form con dati pre-esistenti (per evitare errori di battitura)
+                    document.getElementById("name").value = name
+                    document.getElementById("description").value = description
+                    document.getElementById("brand").value = brand
+                    document.getElementById("price").value = price
+
+                    // modifica aspetto del bottone submit
+                    const sbmtBtn = document.querySelector("button[type='submit']")
+                    sbmtBtn.classList.remove("btn-primary")
+                    sbmtBtn.classList.add("btn-success")
+                    sbmtBtn.innerText = "Modifica"
+
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+
+        }
+
+        const handleSubmit = async (event) => {
+            event.preventDefault();
+
+            // creazione dell'oggetto che invieremo come payload
+            // N.B. la creazione di newProduct viene fatta ad ogni submit del form
+            const newProduct = {
+                name: document.getElementById("name").value,
+                description: document.getElementById("description").value,
+                brand: document.getElementById("brand").value,
+                price: document.getElementById("price").value
+            }
+
+            console.log("HERE ON SUBMIT", newProduct)
+
+            try {
+                // attivo lo stato di caricamento
+                isLoading(true)
+
+                // qui l'endpoint dipende da come siamo arrivati su questa pagina, se per creazione sarà solo l'url normale, se per modifica avrà anche l'id
+                // questo è deciso dal ternary operator alla creazione della variabile "endpoint" in alto
+                const resp = await fetch(endpoint, {
+                    method, // uguale a scrivere method: method,
+                    body: JSON.stringify(newProduct), // è fondamentale fare la stringhifizzazione dell'oggetto nativo o invieremo "[object Object]"
+                    // un header in particolare è importantissimo, il Content-Type, per specificare il formato di invio, altrimenti non verrà riconosciuto dal server
+                    // l'Authorization header serve in caso di API che richiedono autenticazione tramite una API Key
+                    headers: {
+                        "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDEzYTIxNmM1NmIzNjAwMTMzZmU1NjMiLCJpYXQiOjE2NzkwNDczOTYsImV4cCI6MTY4MDI1Njk5Nn0.2MGeue82C7KOOK3AfWkU46xPkpS4pXfBtI1d4doTFTE", // metodo di autenticazione con API Key standard
+                        "Content-Type": "application/json"
+                    }
+                })
+
+                if (resp.ok) {
+                    const newProdObj = await resp.json()
+                    // Aspettiamo il valore di newAppObj per estrarre un'informazione nuova generata dal server ossia l'_id
+
+
+                    // in base a se siamo qui per creazione o modifica creeremo il messaggio più appropriato alla fine della richiesta
+                    if (selectedId) {
+                        alert("Risorsa con l'id " + newProdObj._id + ", modificata con successo")
+                    } else {
+                        alert("Risorsa con l'id " + newProdObj._id + ", creata con successo")
+                    }
+                } else {
+                    throw new Error("La richiesta non è andata a buon fine")
+                }
+
+            } catch (error) {
+                alert(error)
+            } finally {
+                // spengo il loader di caricamento sia quando la richiesta va a buon fine, sia quando abbiamo un errore e si attiva il catch
+                // poco prima di uscire dall'esecuzione del contesto, il metodo finally si attiva a sua volta
+                isLoading(false)
+            }
+        }
+
+        const handleDelete = async () => {
+            isLoading(true) // loader diventa visibile
+
+            // chiediamo conferma all'utente
+            const hasAccepted = confirm("Vuoi davvero eliminare il prodotto?")
+
+            // se accetta procediamo all'effettiva rimozione
+            if (hasAccepted) {
+                try {
+                    console.log("DELETE")
+
+                    // ricorda: basta una fetch con l'endpoint e il metodo corretti per rimuovere già qualcosa, l'await in questo caso non è obbligatorio
+                    // ma se ci serve un qualche dato di ritorno allora lo useremo per aspettare la resp e per ricavarne il body
+                    const resp = await fetch(endpoint, { method: "DELETE" })
+                    const deletedObj = await resp.json()
+
+                    alert("Hai eliminato il prodotto " + deletedObj.name)
+                    // se non usassimo un alert qui servirebbe ritardare l'esecuzione del metodo assign di window, 
+                    // ma siccome alert è "bloccante" in questo specifico caso non occorre
+                    window.location.assign("./index.html")
+
+                } catch (error) {
+                    console.log(error)
+                }
+                finally {
+                    isLoading(false)
+                }
+            }
+        }
+
+        const isLoading = loadingState => {
+            // loading state è un boolean true/false
+            // l'elemento è inizialmente invisibile quindi un loadingState === true gli rimuoverà la classe d-none
+            const spinner = document.querySelector(".spinner-border")
+            if (loadingState) {
+                spinner.classList.remove("d-none")
+            } else {
+                spinner.classList.add("d-none")
+            }
+        }
+    </script>
+</body>
+
+</html>

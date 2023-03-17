@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CRUD Agenda</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand d-flex" href="#">
+            <img src="https://s.w.org/images/core/emoji/14.0.0/svg/1f6cd.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+            <h3>CRUDAZON</h3>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="./index.html">Home </a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="./back-office.html">Back-office <span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <h4>Dettagli Prodotto</h4>
+                <div id="product-details">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+
+    <script>
+        // Appena si avvia lo script cercherà nell'oggetto window il riferimento alla location.search, che è una stringa
+        // questa stringa viene passata al costruttore URLSearchParams per generare un oggetto avanzato con cui possiamo 
+        // gestire il singolo parametro che abbiamo nella URL in questo momento
+        // o una serie di parametri che potrebbero esserci nella URL in uno scenario più realistico.
+        const BASE_URL = window.location.origin
+        const URLParams = new URLSearchParams(window.location.search) // creazione dell'oggetto a partire dalla stringa search --> es. ?id=2938123
+        const productId = URLParams.get("id") // estrazione dall'oggetto del valore associato alla chiave "id"
+        const productURL = `${BASE_URL}${productId}`
+
+
+        window.onload = async () => {
+            const container = document.getElementById("product-details")
+            try {
+                const resp = await fetch("https://striveschool-api.herokuapp.com/api/product/" + productId,{
+                headers: {
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDEzYTIxNmM1NmIzNjAwMTMzZmU1NjMiLCJpYXQiOjE2NzkwMTA4OTgsImV4cCI6MTY4MDIyMDQ5OH0.u1-9mHXrTjI_HWLjJG3qTwccOUmx4VVzoPIITrRzCCk"
+                }
+                })
+                const productData = await resp.json()
+
+                // destrutturazione dell'oggetto in variabili contenenti valori delle sue proprietà
+                const { _id, name, description, brand, price, userId, createdAt, updatedAt, __v } = productData
+                container.innerHTML = `
+                    <h1 class="fw-bold">${name}</h1>
+                    <p>${price}€</p>
+                    <h6 class="bg-light py-3 ps-2">Server Details</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item ps-2"><strong>id:</strong> ${_id}</li>
+                        <li class="list-group-item ps-2"><strong>userId:</strong> ${userId}</li>
+                        <li class="list-group-item ps-2"><strong>createdAt:</strong> ${createdAt}</li>
+                        <li class="list-group-item ps-2"><strong>updatedAt:</strong> ${updatedAt}</li>
+                        <li class="list-group-item ps-2"><strong>__v:</strong> ${__v}</li>
+                    </ul>
+                    <button class="btn btn-success mt-3" onclick="handleClick()">Modifica prodotto</button>
+                    `
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+
+        const handleClick = () => {
+
+            // il metodo .assign() sposta l'utente su un'altra pagina, come fosse un href su un <a>
+            window.location.assign("./backoffice.html?id=" + selectedId)
+        }
+
+
+    </script>
+</body>
+
+</html>

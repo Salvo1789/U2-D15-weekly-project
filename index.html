@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Static Template</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+    <style>
+        
+
+        @media screen and (max-width: 400px) {
+            h1 {
+                font-size: 80px;
+                margin-bottom: -36px;
+            }
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+        }
+
+        .card-body>*:nth-last-child(2) {
+            margin-top: auto;
+        }
+
+        .card-title {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+        }
+
+        .selected {
+            border: 3px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand d-flex" href="#">
+            <img src="https://s.w.org/images/core/emoji/14.0.0/svg/1f6cd.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+            <h3>CRUDAZON</h3>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="./index.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./back-office.html">Back-office</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    <div class="container">
+        <div id="products-wrapper" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3"></div>
+    </div>
+
+    <script>
+        const productsWrapper = document.querySelector("#products-wrapper");
+        
+
+        let outerProducts = [];
+
+        window.onload = () => {
+            loadProducts();
+        };
+
+        const loadProducts = () => {
+            fetch("https://striveschool-api.herokuapp.com/api/product/", {
+            headers: {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDEzYTIxNmM1NmIzNjAwMTMzZmU1NjMiLCJpYXQiOjE2NzkwMTA4OTgsImV4cCI6MTY4MDIyMDQ5OH0.u1-9mHXrTjI_HWLjJG3qTwccOUmx4VVzoPIITrRzCCk"
+            }
+            })
+                .then(resp => resp.json())
+                .then(products => {
+                    // using books right away here
+                    displayProducts(products);
+                    // Saving a reference for later use, without needing to fetch again
+                    outerProducts = products;
+                })
+                .catch(err =>
+                    console.error(err.message)
+                )
+
+        }
+
+        function displayProducts(products) {
+            productsWrapper.innerHTML = "";
+
+            products.forEach((product) => {
+
+            productsWrapper.innerHTML += `
+            <div class="col">
+              <div class="card shadow-sm h-100">
+                <img src="${product.imageUrl}" class="img-fluid card-img-top" alt="${product.name
+                    }">
+                <div class="card-body">
+                  <h5 class="card-title">${product.name}</h5>
+                  <p class="card-text badge rounded-pill bg-dark mb-2">${product.description}</p>
+                  <p class="fs-4">${product.brand}€</p>
+                  <p class="fs-4">${product.price}€</p>
+                  <div>
+                      <button class="btn btn-danger" onclick="addToCart(event, '${product._id}')">Modifica</button>
+                      <button class="btn btn-outline-danger" onclick="handleClick()">
+                        Dettagli
+                      </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+            });
+        }
+
+        const handleClick = () => {
+
+            const URLParams = new URLSearchParams(window.location.search) // creazione dell'oggetto a partire dalla stringa search --> es. ?id=2938123
+            const selectedId = URLParams.get("_id") // estrazione dall'oggetto del valore associato alla chiave "id"
+            console.log("SELECTED ID: ", selectedId)
+            // il metodo .assign() sposta l'utente su un'altra pagina, come fosse un href su un <a>
+            window.location.assign("./product-details.html?id=" + selectedId)
+        }
+
+        
+
+        
+
+        function deleteItem(_id) {
+            const index = shoppingCartList.findIndex((product) => product._id === _id);
+
+            if (index !== -1) {
+                shoppingCartList.splice(index, 1);
+                localStorage.setItem("shoppingCart", JSON.stringify(shoppingCartList))
+            }
+
+            loadShoppingCart();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
