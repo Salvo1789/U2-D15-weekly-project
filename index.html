@@ -85,10 +85,10 @@
             })
                 .then(resp => resp.json())
                 .then(products => {
-                    // using books right away here
+                    
                     displayProducts(products);
-                    // Saving a reference for later use, without needing to fetch again
                     outerProducts = products;
+
                 })
                 .catch(err =>
                     console.error(err.message)
@@ -112,7 +112,7 @@
                   <p class="fs-4">${product.brand}€</p>
                   <p class="fs-4">${product.price}€</p>
                   <div>
-                      <button class="btn btn-primary" onclick="addToCart(event, '${product._id}')">Modifica</button>
+                      <button class="btn btn-primary" onclick="handleClick()">Modifica</button>
                       <button class="btn btn-outline-primary" onclick="handleClick()">
                         Dettagli
                       </button>
@@ -126,10 +126,9 @@
 
         const handleClick = () => {
 
-            const URLParams = new URLSearchParams(window.location.search) // creazione dell'oggetto a partire dalla stringa search --> es. ?id=2938123
-            const selectedId = URLParams.get("_id") // estrazione dall'oggetto del valore associato alla chiave "id"
+            const URLParams = new URLSearchParams(window.location.search)
+            const selectedId = URLParams.get("id") 
             console.log("SELECTED ID: ", selectedId)
-            // il metodo .assign() sposta l'utente su un'altra pagina, come fosse un href su un <a>
             window.location.assign("./product-details.html?id=" + selectedId)
         }
 

@@ -100,43 +100,34 @@
 
     <script>
 
-        // vedi pagina details.html per spiegazione delle prossime due righe
         const URLParams = new URLSearchParams(window.location.search)
         const selectedId = URLParams.get("id")
-
         const endpoint = selectedId ? "https://striveschool-api.herokuapp.com/api/product/" + selectedId : "https://striveschool-api.herokuapp.com/api/product/"
         const method = selectedId ? "PUT" : "POST"
 
-
-        // funzione lanciata dall'onclick del bottone, che bypassa il meccanismo che impedisce al onsubmit di azionarsi se i campi non sono validi
-        // così riusciamo a stabilire il momento giusto per mostrare la colorazione dei campi all'utente
-        // quantomeno dopo che prova ad inviare un form incompleto e non al caricamento della pagina (per non trovare un form rosso senza avere ancora fatto niente)
         const handleValidate = () => {
             const form = document.querySelector("form")
             form.classList.add("validated")
-            // quando il form riceverà la calsse validated il css troverà corrispondenza e colorerà in verde i campi validi e in rosso quelli incompleti/non validi
+            
         }
 
         window.onload = async () => {
 
             if (selectedId) {
 
-                document.getElementById("subtitle").innerText = " — Modifica appuntamento" // cambia testo sottotitolo se siamo arrivati sulla pagina per modificare una risorsa esistente
-                document.getElementById("delete-btn").classList.remove("d-none") // abilita il bottone delete solo sulla pagina di modifica
+                document.getElementById("subtitle").innerText = " — Modifica appuntamento"
+                document.getElementById("delete-btn").classList.remove("d-none") 
 
                 try {
-                    const resp = await fetch(endpoint) // fetch di tipo GET su endpoint con id incorporato
+                    const resp = await fetch(endpoint) 
                     const productData = await resp.json()
-                    const { name, description, brand, price } = producttData
+                    const { name, description, brand, price } = productData
 
-
-                    // pre popolazione dei campi del form con dati pre-esistenti (per evitare errori di battitura)
                     document.getElementById("name").value = name
                     document.getElementById("description").value = description
                     document.getElementById("brand").value = brand
                     document.getElementById("price").value = price
-
-                    // modifica aspetto del bottone submit
+ 
                     const sbmtBtn = document.querySelector("button[type='submit']")
                     sbmtBtn.classList.remove("btn-primary")
                     sbmtBtn.classList.add("btn-success")
@@ -151,9 +142,6 @@
 
         const handleSubmit = async (event) => {
             event.preventDefault();
-
-            // creazione dell'oggetto che invieremo come payload
-            // N.B. la creazione di newProduct viene fatta ad ogni submit del form
             const newProduct = {
                 name: document.getElementById("name").value,
                 description: document.getElementById("description").value,
@@ -164,16 +152,12 @@
             console.log("HERE ON SUBMIT", newProduct)
 
             try {
-                // attivo lo stato di caricamento
                 isLoading(true)
 
-                // qui l'endpoint dipende da come siamo arrivati su questa pagina, se per creazione sarà solo l'url normale, se per modifica avrà anche l'id
-                // questo è deciso dal ternary operator alla creazione della variabile "endpoint" in alto
+                
                 const resp = await fetch(endpoint, {
-                    method, // uguale a scrivere method: method,
-                    body: JSON.stringify(newProduct), // è fondamentale fare la stringhifizzazione dell'oggetto nativo o invieremo "[object Object]"
-                    // un header in particolare è importantissimo, il Content-Type, per specificare il formato di invio, altrimenti non verrà riconosciuto dal server
-                    // l'Authorization header serve in caso di API che richiedono autenticazione tramite una API Key
+                    method, 
+                    body: JSON.stringify(newProduct), 
                     headers: {
                         "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDEzYTIxNmM1NmIzNjAwMTMzZmU1NjMiLCJpYXQiOjE2NzkwNDczOTYsImV4cCI6MTY4MDI1Njk5Nn0.2MGeue82C7KOOK3AfWkU46xPkpS4pXfBtI1d4doTFTE"
                         //"Content-Type": "application/json"
@@ -182,10 +166,7 @@
 
                 if (resp.ok) {
                     const newProdObj = await resp.json()
-                    // Aspettiamo il valore di newAppObj per estrarre un'informazione nuova generata dal server ossia l'_id
-
-
-                    // in base a se siamo qui per creazione o modifica creeremo il messaggio più appropriato alla fine della richiesta
+                    
                     if (selectedId) {
                         alert("Risorsa con l'id " + newProdObj._id + ", modificata con successo")
                     } else {
@@ -198,31 +179,25 @@
             } catch (error) {
                 alert(error)
             } finally {
-                // spengo il loader di caricamento sia quando la richiesta va a buon fine, sia quando abbiamo un errore e si attiva il catch
-                // poco prima di uscire dall'esecuzione del contesto, il metodo finally si attiva a sua volta
                 isLoading(false)
             }
         }
 
         const handleDelete = async () => {
-            isLoading(true) // loader diventa visibile
+            isLoading(true) 
 
-            // chiediamo conferma all'utente
+            
             const hasAccepted = confirm("Vuoi davvero eliminare il prodotto?")
 
-            // se accetta procediamo all'effettiva rimozione
+            
             if (hasAccepted) {
                 try {
                     console.log("DELETE")
 
-                    // ricorda: basta una fetch con l'endpoint e il metodo corretti per rimuovere già qualcosa, l'await in questo caso non è obbligatorio
-                    // ma se ci serve un qualche dato di ritorno allora lo useremo per aspettare la resp e per ricavarne il body
+                   
                     const resp = await fetch(endpoint, { method: "DELETE" })
                     const deletedObj = await resp.json()
-
                     alert("Hai eliminato il prodotto " + deletedObj.name)
-                    // se non usassimo un alert qui servirebbe ritardare l'esecuzione del metodo assign di window, 
-                    // ma siccome alert è "bloccante" in questo specifico caso non occorre
                     window.location.assign("./index.html")
 
                 } catch (error) {
@@ -235,8 +210,7 @@
         }
 
         const isLoading = loadingState => {
-            // loading state è un boolean true/false
-            // l'elemento è inizialmente invisibile quindi un loadingState === true gli rimuoverà la classe d-none
+        
             const spinner = document.querySelector(".spinner-border")
             if (loadingState) {
                 spinner.classList.remove("d-none")

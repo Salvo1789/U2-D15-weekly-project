@@ -49,13 +49,10 @@
         crossorigin="anonymous"></script>
 
     <script>
-        // Appena si avvia lo script cercherà nell'oggetto window il riferimento alla location.search, che è una stringa
-        // questa stringa viene passata al costruttore URLSearchParams per generare un oggetto avanzato con cui possiamo 
-        // gestire il singolo parametro che abbiamo nella URL in questo momento
-        // o una serie di parametri che potrebbero esserci nella URL in uno scenario più realistico.
+        
         const BASE_URL = window.location.origin
-        const URLParams = new URLSearchParams(window.location.search) // creazione dell'oggetto a partire dalla stringa search --> es. ?id=2938123
-        const productId = URLParams.get("id") // estrazione dall'oggetto del valore associato alla chiave "id"
+        const URLParams = new URLSearchParams(window.location.search) 
+        const productId = URLParams.get("id") 
         const productURL = `${BASE_URL}${productId}`
 
 
@@ -92,8 +89,7 @@
 
         const handleClick = () => {
 
-            // il metodo .assign() sposta l'utente su un'altra pagina, come fosse un href su un <a>
-            window.location.assign("./backoffice.html?id=" + selectedId)
+            window.location.assign(`./backoffice.html?id=${productId}`)
         }
 
 
