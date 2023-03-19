@@ -1,156 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Static Template</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crudazon homepage</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
     <style>
-        
+      .card {
+        transition: transform 0.2s ease;
+      }
 
-        @media screen and (max-width: 400px) {
-            h1 {
-                font-size: 80px;
-                margin-bottom: -36px;
-            }
-        }
-
-        .card-body {
-            display: flex;
-            flex-direction: column;
-            align-items: start;
-        }
-
-        .card-body>*:nth-last-child(2) {
-            margin-top: auto;
-        }
-
-        .card-title {
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
-            overflow: hidden;
-        }
-
-        .selected {
-            border: 3px solid red;
-        }
+      .card:hover {
+        transform: scale(1.1);
+      }
     </style>
-</head>
+  </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand d-flex" href="#">
-            <img src="https://s.w.org/images/core/emoji/14.0.0/svg/1f6cd.svg" width="30" height="30" class="d-inline-block align-top" alt="">
-            <h3>CRUDAZON</h3>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-success">
+      <div class="container-fluid px-5">
+        <a class="navbar-brand d-flex" href="./index.html">
+          <img src="./asset/1f6cd.svg" width="24" height="24" />
+          CRUDAZON
+          <div
+            id="loader"
+            class="spinner-border text-success ms-3"
+            role="status"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item active">
-              <a class="nav-link" href="./index.html">Home <span class="sr-only">(current)</span></a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto d-flex mb-2 mb-lg-0">
+            <li class="nav-item me-auto">
+              <a class="nav-link active" aria-current="page" href="./index.html"
+                >Home</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="./back-office.html">Back-office</a>
+              <a class="nav-link" href="./back-office.html">Backoffice</a>
             </li>
           </ul>
         </div>
-      </nav>
+      </div>
+    </nav>
 
-    <div class="container">
-        <div id="products-wrapper" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3"></div>
+    <div class="container mt-5">
+      <div
+        id="products-list"
+        class="row row-cols-1 row-cols-sm-2 row-cols-md-4"
+      ></div>
+    </div>
+    <div
+      id="toast"
+      class="toast align-items-center mt-3 position-fixed top-0 start-50 translate-middle-x"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="toast-header">
+        <strong id="toast_status" class="me-auto">Bootstrap</strong>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div id="toast_status_msg" class="toast-body"></div>
     </div>
 
+    <script src="./asset/functions.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
+
     <script>
-        const productsWrapper = document.querySelector("#products-wrapper");
-        
-
-        let outerProducts = [];
-
-        window.onload = () => {
-            loadProducts();
-        };
-
-        const loadProducts = () => {
-            fetch("https://striveschool-api.herokuapp.com/api/product/", {
-            headers: {
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDEzYTIxNmM1NmIzNjAwMTMzZmU1NjMiLCJpYXQiOjE2NzkwMTA4OTgsImV4cCI6MTY4MDIyMDQ5OH0.u1-9mHXrTjI_HWLjJG3qTwccOUmx4VVzoPIITrRzCCk"
-            }
-            })
-                .then(resp => resp.json())
-                .then(products => {
-                    
-                    displayProducts(products);
-                    outerProducts = products;
-
-                })
-                .catch(err =>
-                    console.error(err.message)
-                )
-
+      const loadArticless = async () => {
+        const cnt = document.getElementById("products-list");
+        cnt.innerHTML = "";
+        const products = await resp(
+          "https://striveschool-api.herokuapp.com/api/product/"
+        );
+        console.log(products);
+        for (const product of products) {
+          const { brand, description, imageUrl, name, price, _id } = product;
+          cnt.insertAdjacentHTML(
+            "beforeend",
+            cardTpl(_id, imageUrl, name, brand, description, price)
+          );
         }
+      };
 
-        function displayProducts(products) {
-            productsWrapper.innerHTML = "";
-
-            products.forEach((product) => {
-
-            productsWrapper.innerHTML += `
-            <div class="col">
-              <div class="card shadow-sm h-100">
-                <img src="${product.imageUrl}" class="img-fluid card-img-top" alt="${product.name
-                    }">
-                <div class="card-body">
-                  <h5 class="card-title">${product.name}</h5>
-                  <p class="card-text badge rounded-pill bg-dark mb-2">${product.description}</p>
-                  <p class="fs-4">${product.brand}€</p>
-                  <p class="fs-4">${product.price}€</p>
-                  <div>
-                      <button class="btn btn-primary" onclick="handleClick()">Modifica</button>
-                      <button class="btn btn-outline-primary" onclick="handleClick()">
-                        Dettagli
-                      </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-            });
-        }
-
-        const handleClick = () => {
-
-            const URLParams = new URLSearchParams(window.location.search)
-            const selectedId = URLParams.get("id") 
-            console.log("SELECTED ID: ", selectedId)
-            window.location.assign("./product-details.html?id=" + selectedId)
-        }
-
-        
-
-        
-
-        function deleteItem(_id) {
-            const index = shoppingCartList.findIndex((product) => product._id === _id);
-
-            if (index !== -1) {
-                shoppingCartList.splice(index, 1);
-                localStorage.setItem("shoppingCart", JSON.stringify(shoppingCartList))
-            }
-
-            loadShoppingCart();
-        }
+      document.addEventListener("DOMContentLoaded", (e) => {
+        setTimeout(() => {
+          loadArticless();
+        }, 2000);
+      });
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-        crossorigin="anonymous"></script>
-</body>
-
+  </body>
 </html>

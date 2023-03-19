@@ -1,224 +1,241 @@
-<!doctype html>
-<html lang="it">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CRUDAZON - BACKOFFICE</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <style>
-        .form-text {
-            display: none;
-        }
-
-        form.validated input:valid,
-        form.validated textarea:valid {
-            border-color: green;
-        }
-
-        form.validated input:invalid,
-        form.validated textarea:invalid {
-            border-color: red;
-        }
-
-        form.validated input:invalid+div,
-        form.validated textarea:invalid+div {
-            display: block;
-        }
-    </style>
-</head>
-
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand d-flex" href="#">
-            <img src="https://s.w.org/images/core/emoji/14.0.0/svg/1f6cd.svg" width="30" height="30" class="d-inline-block align-top" alt="">
-            <h3>CRUDAZON</h3>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crudazon-back-office</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+    <script src="asset/functions.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-success">
+      <div class="container-fluid px-5">
+        <a class="navbar-brand d-flex" href="./index.html">
+          <img src="./asset/1f6cd.svg" width="24" height="24" />
+          <div
+            id="loader"
+            class="spinner-border text-success me-3 invisible"
+            role="status"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          CRUDAZON
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="./index.html">Home </a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto d-flex mb-2 mb-lg-0">
+            <li class="nav-item me-auto">
+              <a class="nav-link active" aria-current="page" href="./index.html"
+                >Home</a
+              >
             </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="./back-office.html">Back-office <span class="sr-only">(current)</span></a>
+            <li class="nav-item">
+              <a class="nav-link" href="./back-office.html">Backoffice</a>
             </li>
           </ul>
         </div>
+      </div>
     </nav>
-
     <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-8">
-                <h2 class="d-inline-block">CRUDAZON > Backoffice</h2>
-                <h5 id="subtitle" class="d-inline-block"> — Aggiungi prodotto </h5>
-                <div class="spinner-border text-info float-end d-none" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <hr class="border-secondary">
-                <form class="mt-4" onsubmit="handleSubmit(event)">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Nome Prodotto</label>
-                        <input type="text" class="form-control" id="name" placeholder="Inserisci un nome"
-                            aria-describedby="name" required>
-                        <div class="form-text text-danger">Ti manca di inserire un nome per l'evento</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Descrizione</label>
-                        <textarea class="form-control" id="description" aria-describedby="description"
-                            placeholder="Inserisci una descrizione" row="4" required></textarea>
-                        <div class="form-text text-danger">Ti manca la descrizione</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Brand</label>
-                        <textarea class="form-control" id="brand" aria-describedby="brand"
-                            placeholder="Inserisci il brand" row="4" required></textarea>
-                        <div class="form-text text-danger">Ti manca il brand</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="price" class="form-label">Prezzo</label>
-                        <input type="number" class="form-control" id="price" aria-describedby="price" placeholder="1€"
-                            required>
-                        <div class="form-text text-danger">Ti manca il prezzo</div>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-secondary">Cancel</button>
-                        <button type="submit" class="btn btn-primary me-auto" onclick="handleValidate()">Submit</button>
-                        <button id="delete-btn" type="button" class="btn btn-danger d-none"
-                            onclick="handleDelete()">Delete</button>
-                    </div>
-                </form>
+      <div class="row justify-content-center">
+        <div class="col-8">
+          <h2 class="d-inline-block">Backoffice</h2>
+          <h5 id="subtitle" class="d-inline-block">Crea nuovo articolo</h5>
+          <div class="spinner-border text-info float-end d-none" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <hr class="border-secondary" />
+          <form id="form_product" class="mt-4" novalidate>
+            <div class="mb-3">
+              <label for="brand" class="form-label">Marca</label>
+              <input
+                type="text"
+                class="form-control"
+                id="brand"
+                placeholder="Inserisci un nome"
+                aria-describedby="brand"
+                required
+              />
+              <div class="invalid-feedback">Inserisci la marca.</div>
             </div>
+            <div class="mb-3">
+              <label for="name" class="form-label">Modello</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                placeholder="Inserisci un nome"
+                aria-describedby="name"
+                required
+              />
+              <div class="invalid-feedback">Inserisci il modello</div>
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Descrizione</label>
+              <textarea
+                class="form-control"
+                id="description"
+                aria-describedby="description"
+                placeholder="Inserisci una descrizione"
+                row="4"
+                required
+              ></textarea>
+              <div class="invalid-feedback">Inserisci la descrizione.</div>
+            </div>
+            <div class="mb-3">
+              <label for="price" class="form-label">Prezzo</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="price"
+                  aria-describedby="price"
+                  placeholder="1€"
+                  required
+                />
+              </div>
+              <div class="invalid-feedback">Inserisci il prezzo.</div>
+            </div>
+            <div class="mb-3">
+              <label for="image" class="form-label">URL immagine</label>
+              <input
+                type="text"
+                class="form-control"
+                id="image"
+                aria-describedby="time"
+                placeholder="http://"
+                required
+              />
+              <div class="invalid-feedback">Inserisci URL immagine.</div>
+            </div>
+            <div class="d-flex gap-2">
+              <button
+                id="btn_reset"
+                type="button"
+                class="btn btn-outline-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                id="btn_submit"
+                type="submit"
+                class="btn btn-primary me-auto"
+              >
+                Submit
+              </button>
+              <button
+                id="btn_delete"
+                type="button"
+                class="btn btn-danger d-none"
+              >
+                Delete
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-        crossorigin="anonymous"></script>
+    <div
+      id="toast"
+      class="toast align-items-center text-bg-danger position-fixed top-0 start-50 translate-middle-x"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="toast-header">
+        <strong id="toast_status" class="me-auto">Bootstrap</strong>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div id="toast_status_msg" class="toast-body"></div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
 
     <script>
+      const URLParams = new URLSearchParams(window.location.search);
+      const productId = URLParams.get("id");
+      const url = `${origin_url}${productId}`;
 
-        const URLParams = new URLSearchParams(window.location.search)
-        const selectedId = URLParams.get("id")
-        const endpoint = selectedId ? "https://striveschool-api.herokuapp.com/api/product/" + selectedId : "https://striveschool-api.herokuapp.com/api/product/"
-        const method = selectedId ? "PUT" : "POST"
+      document.addEventListener("DOMContentLoaded", async (e) => {
+        const btnDelete = document.getElementById("btn_delete");
+        const btnReset = document.getElementById("btn_reset");
+        const btnSubmit = document.getElementById("btn_submit");
+        const formProduct = document.getElementById("form_product");
+        const nameField = document.getElementById("name");
+        const descriptionField = document.getElementById("description");
+        const priceField = document.getElementById("price");
+        const brandField = document.getElementById("brand");
+        const imageField = document.getElementById("image");
 
-        const handleValidate = () => {
-            const form = document.querySelector("form")
-            form.classList.add("validated")
-            
+        if (productId) {
+          btnDelete.classList.remove("d-none");
+          btnReset.classList.add("d-none");
+          btnSubmit.innerText = "Save";
+          const product = await resp(url);
+          const { brand, description, imageUrl, name, price } = product;
+          nameField.value = name;
+          descriptionField.value = description;
+          priceField.value = price;
+          brandField.value = brand;
+          imageField.value = imageUrl;
         }
 
-        window.onload = async () => {
+        btnDelete.addEventListener("click", (e) => {
+          const proceed = confirm("Sicuro di voler eliminare l'articolo?");
+          if (proceed)
+            resp(url, "DELETE").then(window.location.assign("./index.html"));
+        });
+        btnReset.addEventListener("click", (e) => {
+          const proceed = confirm("Sicuro di voler cancellare i dati inseriti");
+          if (proceed) formProduct.reset();
+        });
 
-            if (selectedId) {
+        formProduct.addEventListener("submit", (e) => {
+          e.preventDefault();
 
-                document.getElementById("subtitle").innerText = " — Modifica appuntamento"
-                document.getElementById("delete-btn").classList.remove("d-none") 
+          e.target.classList.add("was-validated");
+          if (e.target.checkValidity()) {
+            const msgBody = {
+              name: nameField.value,
+              description: descriptionField.value,
+              brand: brandField.value,
+              imageUrl: imageField.value,
+              price: priceField.value,
+            };
 
-                try {
-                    const resp = await fetch(endpoint) 
-                    const productData = await resp.json()
-                    const { name, description, brand, price } = productData
-
-                    document.getElementById("name").value = name
-                    document.getElementById("description").value = description
-                    document.getElementById("brand").value = brand
-                    document.getElementById("price").value = price
- 
-                    const sbmtBtn = document.querySelector("button[type='submit']")
-                    sbmtBtn.classList.remove("btn-primary")
-                    sbmtBtn.classList.add("btn-success")
-                    sbmtBtn.innerText = "Modifica"
-
-                } catch (error) {
-                    console.log(error)
-                }
-            }
-
-        }
-
-        const handleSubmit = async (event) => {
-            event.preventDefault();
-            const newProduct = {
-                name: document.getElementById("name").value,
-                description: document.getElementById("description").value,
-                brand: document.getElementById("brand").value,
-                price: document.getElementById("price").value
-            }
-
-            console.log("HERE ON SUBMIT", newProduct)
-
-            try {
-                isLoading(true)
-
-                
-                const resp = await fetch(endpoint, {
-                    method, 
-                    body: JSON.stringify(newProduct), 
-                    headers: {
-                        "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDEzYTIxNmM1NmIzNjAwMTMzZmU1NjMiLCJpYXQiOjE2NzkwNDczOTYsImV4cCI6MTY4MDI1Njk5Nn0.2MGeue82C7KOOK3AfWkU46xPkpS4pXfBtI1d4doTFTE"
-                        //"Content-Type": "application/json"
-                    }
-                })
-
-                if (resp.ok) {
-                    const newProdObj = await resp.json()
-                    
-                    if (selectedId) {
-                        alert("Risorsa con l'id " + newProdObj._id + ", modificata con successo")
-                    } else {
-                        alert("Risorsa con l'id " + newProdObj._id + ", creata con successo")
-                    }
-                } else {
-                    throw new Error("La richiesta non è andata a buon fine")
-                }
-
-            } catch (error) {
-                alert(error)
-            } finally {
-                isLoading(false)
-            }
-        }
-
-        const handleDelete = async () => {
-            isLoading(true) 
-
-            
-            const hasAccepted = confirm("Vuoi davvero eliminare il prodotto?")
-
-            
-            if (hasAccepted) {
-                try {
-                    console.log("DELETE")
-
-                   
-                    const resp = await fetch(endpoint, { method: "DELETE" })
-                    const deletedObj = await resp.json()
-                    alert("Hai eliminato il prodotto " + deletedObj.name)
-                    window.location.assign("./index.html")
-
-                } catch (error) {
-                    console.log(error)
-                }
-                finally {
-                    isLoading(false)
-                }
-            }
-        }
-
-        const isLoading = loadingState => {
-        
-            const spinner = document.querySelector(".spinner-border")
-            if (loadingState) {
-                spinner.classList.remove("d-none")
+            if (productId) {
+              resp(url, "PUT", JSON.stringify(msgBody));
             } else {
-                spinner.classList.add("d-none")
+              resp(origin_url, "POST", JSON.stringify(msgBody));
             }
-        }
+          }
+        });
+      });
     </script>
-</body>
-
+  </body>
 </html>
